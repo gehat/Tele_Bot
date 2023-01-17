@@ -57,8 +57,8 @@ class PSql():  # inicialization data user
             cur.execute('SELECT user_id,name_product,url,price,idd FROM USERS')
             rows = cur.fetchall()
             for row in rows:
-                client = await wb.Browsr(row[2]).get_elements  # Browse class get url
-                if client[3] is not None and client[3] < row[
+                client = await wb.Browsr(row[2]).get_elements # Browse class get url
+                if client[1] is not None and client[3] is not None and client[3] < row[
                     3]:  # Comparison of the old price from the database and the new one received
                     user = row[
                         0]  # data[0]{self.__user},data[1]'{self.name}', data[2]'{self.url}',data[3]{self.price}
