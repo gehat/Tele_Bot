@@ -24,6 +24,8 @@ class Browsr():
         options.add_argument("start-min")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
+        options.add_argument("--disable-blink-features=AutomationControlled") # disable WebDriver
+        options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.75 Safari/537.36')
         return options
 
     @async_property
@@ -45,5 +47,6 @@ class Browsr():
             price_all = block.find_element(By.CLASS_NAME, 'price-block').text.split('\n')
             self.__price = int(''.join(map(str, [int(i) for i in price_all[0].strip() if i.isdigit()])))
         finally:
+            pickle.dump(self.__driver.get_cookies(), open('cookies.pkl', 'wb'))
             self.__driver.quit()
             return self.__usr_id, self.__name, self.url, self.__price

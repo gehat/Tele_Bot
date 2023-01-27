@@ -68,9 +68,11 @@ class PSql():  # inicialization data user
                                                     f'цена: {client[3]}₽\n Ссылка на твоар: {row[2]}',
                                                reply_markup=InlineKeyboardMarkup(). \
                                                add(InlineKeyboardButton(f'Удалить',
-                                                                        callback_data=f'del  {user}  {row[4]}')).add(
-                                                   InlineKeyboardButton(f'Следить дальше',
-                                                                        callback_data=f'update  {user}  {row[4]}  {client[3]}')))
+                                                                        callback_data=f'del  {user}  {row[4]}')))
+                                                   #InlineKeyboardButton(f'Следить дальше',
+                                                                       # callback_data=f'update  {user}  {row[4]}  {client[3]}')))
+                        cur.execute(f'UPDATE users SET price={client[3]} WHERE idd={row[4]} and user_id={row[0]}')
+                        self.__con.commit()
                     except BotBlocked:
                         pass
                 elif client[3] is None:  # if the price of the product is not specified
