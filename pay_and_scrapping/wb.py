@@ -7,6 +7,8 @@ import pickle
 from random import randint
 from async_property import async_property
 import asyncio
+from selenium.webdriver.support import expected_conditions as ES
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 class Browsr():
@@ -25,6 +27,7 @@ class Browsr():
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
         options.add_argument("--disable-blink-features=AutomationControlled") # disable WebDriver
+        options.add_argument("--blink-settings=imagesEnabled=false")
         options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.5414.75 Safari/537.36')
         return options
 
@@ -37,14 +40,16 @@ class Browsr():
         for cookie in pickle.load(open('cookies.pkl', 'rb')):
             self.__driver.add_cookie(cookie)
         self.__driver.refresh()
-        await asyncio.sleep(randint(2, 4))
-        block = self.__driver.find_element(By.TAG_NAME, 'main')
+        block = WebDriverWait(self.__driver, 10).until(ES.visibility_of_element_located((By.TAG_NAME, 'main')))
         try:
-            self.__name = block.find_element(By.CLASS_NAME, 'product-page__grid').find_element(By.TAG_NAME, 'h1').text
+            self.__name = WebDriverWait(block, 10).until(
+                ES.visibility_of_element_located((By.CLASS_NAME, 'product-page__grid'))).find_element(By.TAG_NAME,
+                                                                                                      'h1').text
         except selenium.common.exceptions.NoSuchElementException:
             pass
         try:
-            price_all = block.find_element(By.CLASS_NAME, 'price-block').text.split('\n')
+            price_all = WebDriverWait(block, 10).until(
+                ES.visibility_of_element_located((By.CLASS_NAME, 'price-block'))).text.split('\n')
             self.__price = int(''.join(map(str, [int(i) for i in price_all[0].strip() if i.isdigit()])))
         finally:
             pickle.dump(self.__driver.get_cookies(), open('cookies.pkl', 'wb'))
